@@ -1,0 +1,65 @@
+# 沙盒配置文件
+server:
+  port: 8090
+  host: "0.0.0.0"
+  max_concurrency: 10
+  shutdown_timeout: 30
+
+docker:
+  network_mode: "none"          # 网络模式: none, host, bridge
+  disable_cache: true           # 是否禁用缓存
+  timeout: 10                   # 执行超时 (秒)
+  temp_dir: "/tmp/judge"        # 临时目录
+  max_memory: 256               # 最大内存 (MB)
+  cpu_limit: "0.5"              # CPU限制
+
+security:
+  disable_fork: true            # 禁止fork
+  disable_network: true         # 禁止网络访问
+  disable_file_write: true      # 禁止文件写入
+  max_processes: 50             # 最大进程数
+  blocked_syscalls:             # 禁止的系统调用
+    - "socket"
+    - "clone"
+    - "fork"
+    - "vfork"
+    - "execve"
+    - "kill"
+  working_dir_size: 50          # 工作目录大小限制 (MB)
+
+language:
+  go:
+    image: "golang:1.19-alpine"
+    version: "1.19"
+    compile_command: ["go", "build", "-o", "app"]
+    run_command: ["./app"]
+    file_name: "main.go"
+    timeout: 5
+  
+  cpp:
+    image: "gcc:11-alpine"
+    version: "11"
+    compile_command: ["g++", "-std=c++17", "-O2", "-o", "app", "main.cpp"]
+    run_command: ["./app"]
+    file_name: "main.cpp"
+    timeout: 5
+  
+  java:
+    image: "openjdk:17-alpine"
+    version: "17"
+    compile_command: ["javac", "Main.java"]
+    run_command: ["java", "Main"]
+    file_name: "Main.java"
+    timeout: 10
+  
+  python:
+    image: "python:3.9-alpine"
+    version: "3.9"
+    compile_command: []
+    run_command: ["python", "main.py"]
+    file_name: "main.py"
+    timeout: 5
+
+storage:
+  type: "file"
+  path: "./data"
